@@ -13,7 +13,7 @@ import operator  # used for sorting
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5 import QtGui, QtCore
-from PyQt5.QtWidgets import QWidget, QCheckBox, QApplication, QTableView, QAbstractItemView, QVBoxLayout
+from PyQt5.QtWidgets import QMenu, QAction, QWidget, QCheckBox, QApplication, QTableView, QAbstractItemView, QVBoxLayout
 # from time import time
 import threading
 
@@ -32,6 +32,7 @@ class MyWindow(QWidget):
         # bind cell click to a method reference
         self.table_view.clicked.connect(self.showSelection)
         self.table_view.clicked.connect(self.selectRow)
+       
 
         self.table_view.setModel(self.table_model)
         # enable sorting
@@ -40,6 +41,45 @@ class MyWindow(QWidget):
         layout = QVBoxLayout(self)
         layout.addWidget(self.table_view)
         self.setLayout(layout)
+
+        # self.createActions()
+        # self.createMenus()
+        # self.cutAct = QAction("Cu&t", self, shortcut=QKeySequence.Cut,
+        # statusTip="Cut the current selection's contents to the clipboard",
+        # triggered=lambda:self.cut(event))
+        self.cutAct = QAction("Cu&t", self, shortcut=QKeySequence.Cut,
+            statusTip="Cut the current selection's contents to the clipboard")
+
+    # def createActions(self):
+    #     self.newAct = QAction("&New", self, shortcut=QKeySequence.New,
+    #     statusTip="Create a new file", triggered=self.newFile)
+
+    def contextMenuEvent(self, event):
+        index_list = self.table_view.selectionModel().selection().indexes()
+        if index_list:
+            # for i in self.table_view.selectionModel().selection().indexes():
+            i = index_list[0]
+            row, column = i.row(), i.column()
+            print(row, column)
+        menu = QMenu(self)
+        # self.cutAct.triggered.connect(lambda:self.cut(event))
+        cutAction = menu.addAction("Cut")
+        # menu.addAction(self.copyAct)
+        # menu.addAction(self.pasteAct)
+        # menu.exec_(event.globalPos())
+        # menu.popup(QtGui.QCursor.pos())
+        pos = QtGui.QCursor.pos()
+        action = menu.exec_(self.table_view.mapToGlobal(pos))
+        #action = menu.exec_(event.globalPos())
+        if action == cutAction:
+            self.cut(row)
+    # def newFile(self):
+    #     self.setWindowTitle("Invoked <b>File|New</b>")
+
+    def cut(self, row):
+        # rowno = self.table_view.rowAt(event.pos().y())
+        self.setWindowTitle(f"Invoked Edit|Cut at row {row}")
+
 
     def update_model(self, datalist, header):
         self.table_model2 = MyTableModel(self, dataList, header)
@@ -54,8 +94,8 @@ class MyWindow(QWidget):
         self.setWindowTitle(sf)
 
     def selectRow(self, index):
-        # print("current row is %d", index.row())
-        pass
+        print("current row is %d", index.row())
+        # pass
 
 
 class MyTableModel(QAbstractTableModel):

@@ -1,0 +1,2 @@
+
+        menu.addAction(self.cutAct)
