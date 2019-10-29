@@ -17,7 +17,7 @@ class Example(QWidget):
       date = my_calendar.selectedDate()
       self.my_label.setText(date.toString())
       self.my_label.move(10, 220)
-      self.setGeometry(100,100,320,270)
+      self.setGeometry(100,100,320,240)
       self.setWindowTitle('Calendar')
       self.show()
    def show_date(self, date):
